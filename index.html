@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AFit - Your Fitness Companion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Afit Health App</title>
 
   <!-- Bootstrap & Chart.js -->
   <link
@@ -14,390 +13,603 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    /* Overall Light Theme */
     body {
-      background-color: #f8f9fa;
-      font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #f8f9fa; /* Light background */
+      font-family: Arial, sans-serif;
+      color: #000;
+      text-align: center;
     }
+
+    /* Splash/Welcome Screen */
+    #welcome-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #87CEEB, #E6E6FA); /* sky-blue to lavender */
+      height: 100vh;
+      color: #000;
+    }
+    #welcome-screen img {
+      width: 250px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    }
+    #welcome-screen h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      color: #222;
+    }
+
+    /* Page container style */
     .page {
       display: none;
+      min-height: 100vh;
+      padding: 1rem;
     }
     .active-page {
       display: block;
     }
 
-    /* Welcome Screen */
-    .welcome-screen {
-      background: linear-gradient(to right, #4b6cb7, #182848);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: white;
-    }
-
     .container {
       max-width: 600px;
-      margin-top: 20px;
+      margin: 2rem auto;
     }
 
-    .btn-lg {
-      width: 100%;
-      margin-bottom: 0.75rem;
+    /* Branding Header on pages (with a small profile image) */
+    #app-header {
+      display: flex;
+      align-items: center;
+      background-color: #87CEEB; /* sky-blue header */
+      color: #000;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    #app-header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      margin-right: 1rem;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
     }
 
-    /* Circular Chart Container */
+    /* Profile cards on selection page */
+    .profile-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      color: #000;
+    }
+    .profile-card h5 {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .chat-box {
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
     .chart-container {
       position: relative;
       width: 280px;
       height: 280px;
-      margin: auto;
+      margin: 1rem auto;
     }
 
-    .chat-box {
-      background: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 220px;
-      overflow-y: auto;
+    .btn-sky {
+      background-color: #87CEEB;
+      border: none;
+      color: #000;
+      margin-bottom: 0.5rem;
     }
-
-    .back-btn {
-      margin-top: 1rem;
+    .btn-lavender {
+      background-color: #E6E6FA;
+      border: none;
+      color: #000;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 
 <body>
-  <!-- 1) Welcome Screen (5s) -->
-  <div id="welcome-screen" class="welcome-screen">
-    <div>
-      <h1>Welcome to AFit</h1>
-      <p id="quote" class="lead"></p>
-    </div>
+  <!-- Splash/Welcome Screen -->
+  <div id="welcome-screen">
+    <img src="afit-logo.png" alt="Afit Health App Logo" />
+    <h1>Afit Health App</h1>
   </div>
 
-  <!-- 2) Profile Page -->
-  <div id="profile-page" class="page container">
-    <h2 class="text-center mt-5">Create Your Profile</h2>
-    <form id="profile-form">
-      <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input type="text" id="name" class="form-control" required />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Age</label>
-        <input type="number" id="age" class="form-control" required />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Height (cm)</label>
-        <input type="number" id="height" class="form-control" required />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Weight (kg)</label>
-        <input type="number" id="weight" class="form-control" required />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Activity Level</label>
-        <select id="activity-level" class="form-select" required>
-          <option value="1.2">Sedentary (No exercise)</option>
-          <option value="1.375">Light exercise (1-3 days)</option>
-          <option value="1.55">Moderate exercise (3-5 days)</option>
-          <option value="1.725">Very active (6-7 days)</option>
-          <option value="1.9">Extra active (Hard exercise + job)</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-success btn-lg">Submit</button>
-    </form>
+  <!-- Branding Header (visible on all pages except splash) -->
+  <div id="app-header" class="page">
+    <img src="https://picsum.photos/100" alt="Profile Picture" />
+    <h2 class="m-0">AFit - Your Fitness Companion</h2>
   </div>
 
-  <!-- 3) Home Page -->
-  <div id="home-page" class="page container">
-    <h2 class="text-center mt-5">Home</h2>
-    <p class="text-center">Welcome to your fitness dashboard!</p>
-    <div class="list-group">
-      <button
-        class="list-group-item list-group-item-action"
-        onclick="navigateTo('maintenance-page')"
-      >
-        Maintenance Calories
-      </button>
-      <button
-        class="list-group-item list-group-item-action"
-        onclick="navigateTo('goal-page')"
-      >
-        Set Your Goal
-      </button>
-      <button
-        class="list-group-item list-group-item-action"
-        onclick="navigateTo('food-page')"
-      >
-        Suggested Food
-      </button>
-      <button
-        class="list-group-item list-group-item-action"
-        onclick="navigateTo('intake-page')"
-      >
-        Calorie Intake (AI Chat)
-      </button>
-      <button
-        class="list-group-item list-group-item-action"
-        onclick="navigateTo('dashboard-page')"
-      >
-        Dashboard
+  <!-- Profile Selection Page -->
+  <div id="profile-selection-page" class="page">
+    <div class="container">
+      <h2>Select or Manage Profile</h2>
+      <div id="profile-list"></div>
+      <button class="btn btn-sky btn-lg" onclick="showCreateProfile()">
+        Create New Profile
       </button>
     </div>
   </div>
 
-  <!-- 3a) Maintenance Page -->
-  <div id="maintenance-page" class="page container">
-    <h2 class="text-center mt-5">Maintenance Calories</h2>
-    <p id="maintenance-result" class="text-center mt-4"></p>
-    <button
-      class="btn btn-secondary back-btn"
-      onclick="navigateTo('home-page')"
-    >
-      Back
-    </button>
-  </div>
-
-  <!-- 4) Goal Page (4 suggestions of weekly weight change) -->
-  <div id="goal-page" class="page container">
-    <h2 class="text-center mt-5">Choose Your Goal</h2>
-    <button class="btn btn-primary btn-lg" onclick="setGoal('bulk')">
-      Bulk
-    </button>
-    <button class="btn btn-warning btn-lg" onclick="setGoal('cut')">
-      Cut
-    </button>
-    <button class="btn btn-secondary btn-lg" onclick="setGoal('maintain')">
-      Maintain
-    </button>
-    <div id="goal-result" class="text-center mt-3"></div>
-    <button class="btn btn-secondary back-btn" onclick="navigateTo('home-page')">
-      Back
-    </button>
-  </div>
-
-  <!-- 5) Food Suggestions (Breakfast, Lunch, Dinner, Snack) -->
-  <div id="food-page" class="page container">
-    <h2 class="text-center mt-5">Suggested Food</h2>
-    <p id="food-suggestions" class="mt-3"></p>
-    <button
-      class="btn btn-secondary back-btn"
-      onclick="navigateTo('home-page')"
-    >
-      Back
-    </button>
-  </div>
-
-  <!-- 6) Calorie Intake (AI Chat) -->
-  <div id="intake-page" class="page container">
-    <h2 class="text-center mt-5">Calorie Intake</h2>
-    <div class="chat-box" id="chat-box"></div>
-    <input
-      type="text"
-      id="food-input"
-      class="form-control mt-2"
-      placeholder="Enter food & portion"
-    />
-    <button class="btn btn-primary mt-2" onclick="addFood()">Add</button>
-    <button
-      class="btn btn-secondary back-btn"
-      onclick="navigateTo('home-page')"
-    >
-      Back
-    </button>
-  </div>
-
-  <!-- 7) Dashboard Page (Circular Graph for daily intake vs. target) -->
-  <div id="dashboard-page" class="page container">
-    <h2 class="text-center mt-5">Calorie Dashboard</h2>
-    <div class="chart-container mt-4">
-      <canvas id="calorieChart"></canvas>
+  <!-- Profile Form Page (Create/Edit) -->
+  <div id="profile-page" class="page">
+    <div class="container">
+      <h2>Create/Edit Profile</h2>
+      <form id="profile-form">
+        <input type="hidden" id="edit-index" value="-1" />
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" id="name" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Age</label>
+          <input type="number" id="age" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Height (cm)</label>
+          <input type="number" id="height" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Weight (kg)</label>
+          <input type="number" id="weight" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Activity Level</label>
+          <select id="activity-level" class="form-select" required>
+            <option value="1.2">Sedentary (No exercise)</option>
+            <option value="1.375">Light exercise (1-3 days)</option>
+            <option value="1.55">Moderate exercise (3-5 days)</option>
+            <option value="1.725">Very active (6-7 days)</option>
+            <option value="1.9">Extra active (Hard exercise + job)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-sky btn-lg">Save</button>
+      </form>
     </div>
-    <button
-      class="btn btn-secondary back-btn"
-      onclick="navigateTo('home-page')"
-    >
-      Back
-    </button>
+  </div>
+
+  <!-- Home Page -->
+  <div id="home-page" class="page">
+    <div class="container">
+      <h2>Home</h2>
+      <p>Welcome to your fitness dashboard!</p>
+      <div class="list-group">
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="navigateTo('maintenance-page')"
+        >
+          Maintenance Calories
+        </button>
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="navigateTo('goal-page')"
+        >
+          Set Your Goal
+        </button>
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="navigateTo('food-page')"
+        >
+          Suggested Food
+        </button>
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="navigateTo('intake-page')"
+        >
+          Calorie Intake (AI Chat)
+        </button>
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="navigateTo('dashboard-page')"
+        >
+          Dashboard
+        </button>
+        <button
+          class="list-group-item list-group-item-action"
+          onclick="showProfileSelection()"
+        >
+          Switch / Manage Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Maintenance Page -->
+  <div id="maintenance-page" class="page">
+    <div class="container">
+      <h2>Maintenance Calories</h2>
+      <p id="maintenance-result" class="mt-4"></p>
+      <button class="btn btn-lavender mt-3" onclick="navigateTo('home-page')">
+        Back
+      </button>
+    </div>
+  </div>
+
+  <!-- Goal Page -->
+  <div id="goal-page" class="page">
+    <div class="container">
+      <h2>Choose Your Goal</h2>
+      <!-- If user picks cut or bulk, show sub-options for weekly weight change -->
+      <div class="mt-3">
+        <button class="btn btn-sky btn-lg" onclick="prepareGoal('bulk')">Bulk</button>
+        <button class="btn btn-lavender btn-lg" onclick="prepareGoal('cut')">Cut</button>
+        <button class="btn btn-secondary btn-lg" onclick="setGoal('maintain')">Maintain</button>
+      </div>
+      <div id="goal-options" class="mt-4" style="display:none;"></div>
+      <div id="goal-result" class="text-center mt-3"></div>
+      <button class="btn btn-secondary mt-3" onclick="navigateTo('home-page')">
+        Back
+      </button>
+    </div>
+  </div>
+
+  <!-- Food Page -->
+  <div id="food-page" class="page">
+    <div class="container">
+      <h2>Suggested Food</h2>
+      <p id="food-suggestions" class="mt-3"></p>
+      <button class="btn btn-lavender mt-3" onclick="navigateTo('home-page')">Back</button>
+    </div>
+  </div>
+
+  <!-- Intake / AI Chat Page -->
+  <div id="intake-page" class="page">
+    <div class="container">
+      <h2>Calorie Intake</h2>
+      <div class="chat-box" id="chat-box"></div>
+      <input type="text" id="food-input" class="form-control mt-2" placeholder="Enter food & portion" />
+      <button class="btn btn-sky mt-2" onclick="addFood()">Add</button>
+      <button class="btn btn-secondary mt-2" onclick="navigateTo('home-page')">
+        Back
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div id="dashboard-page" class="page">
+    <div class="container">
+      <h2>Calorie Dashboard</h2>
+      <p class="mt-2" id="dashboard-goal"></p>
+      <div class="chart-container mt-4">
+        <canvas id="calorieChart"></canvas>
+      </div>
+      <button class="btn btn-lavender mt-3" onclick="navigateTo('home-page')">Back</button>
+    </div>
   </div>
 
   <script>
-    // GLOBAL VARIABLES
+    /**************************************************
+     * GLOBAL VARS & MULTI-PROFILE DATA             *
+     *************************************************/
+    let profiles = []; // array of { name, age, height, weight, activity }
+    let currentProfileIndex = -1;
+
     let maintenanceCalories = 0;
     let dailyIntakeCalories = 0;
-    let userName = '';
-    let userHeight = 0;
-    let userWeight = 0;
-    let userAge = 0;
-    let userActivity = 0;
-    let goalCalories = 0;
+    let goalCalories = 0; // final daily target after user picks suboption
 
-    // For midnight reset (AI chat)
     document.addEventListener('DOMContentLoaded', () => {
-      // 1) Splash Screen: random quote + 5s timer
-      const quotes = [
-        "The only bad workout is the one that didn't happen.",
-        "Push yourself because no one else is going to do it for you.",
-        "Success starts with self-discipline.",
-        "Take care of your body. It's the only place you have to live.",
-      ];
-      document.getElementById('quote').textContent =
-        quotes[Math.floor(Math.random() * quotes.length)];
-
-      // 5-second wait, then show Profile Page
+      // Show splash for 5s
       setTimeout(() => {
         document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('profile-page').classList.add('active-page');
+        document.getElementById('app-header').classList.add('active-page');
+
+        loadProfiles();
+        if (profiles.length > 0) {
+          showProfileSelection();
+        } else {
+          showPage('profile-page');
+        }
       }, 5000);
 
-      // Check if it's midnight => reset daily intake
       checkMidnightReset();
 
-      // 2) Profile Form => calculates maintenance => goes Home
-      document
-        .getElementById('profile-form')
-        .addEventListener('submit', (event) => {
-          event.preventDefault();
-          userName = document.getElementById('name').value;
-          userAge = parseInt(document.getElementById('age').value);
-          userHeight = parseInt(document.getElementById('height').value);
-          userWeight = parseFloat(document.getElementById('weight').value);
-          userActivity = parseFloat(
-            document.getElementById('activity-level').value
-          );
-
-          const bmr = 10 * userWeight + 6.25 * userHeight - 5 * userAge + 5;
-          maintenanceCalories = Math.round(bmr * userActivity);
-
-          // Update Maintenance Page
-          document.getElementById(
-            'maintenance-result'
-          ).innerHTML = `<strong>${userName}</strong>, your maintenance calories: <strong>${maintenanceCalories} kcal/day</strong>`;
-
-          navigateTo('home-page');
-        });
+      // Save or update profile
+      document.getElementById('profile-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        saveProfile();
+      });
     });
 
-    // Helpers
-    function navigateTo(pageId) {
-      document
-        .querySelectorAll('.page')
-        .forEach((p) => p.classList.remove('active-page'));
-      document.getElementById(pageId).classList.add('active-page');
+    /**************************************************
+     *             PROFILE MANAGEMENT               *
+     *************************************************/
+    function loadProfiles() {
+      const data = localStorage.getItem('afitProfiles');
+      profiles = data ? JSON.parse(data) : [];
+    }
+    function saveProfiles() {
+      localStorage.setItem('afitProfiles', JSON.stringify(profiles));
+    }
 
-      // Load food suggestions if going to 'food-page'
-      if (pageId === 'food-page') {
-        let text = document.getElementById('goal-result').innerText;
+    function showProfileSelection() {
+      hideAllPages();
+      document.getElementById('profile-selection-page').classList.add('active-page');
+
+      const profileList = document.getElementById('profile-list');
+      profileList.innerHTML = '';
+
+      profiles.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'profile-card';
+
+        const h5 = document.createElement('h5');
+        h5.textContent = p.name;
+        div.appendChild(h5);
+
+        const btnGroup = document.createElement('div');
+
+        const openBtn = document.createElement('button');
+        openBtn.className = 'btn btn-sm btn-sky me-2';
+        openBtn.textContent = 'Open';
+        openBtn.onclick = () => openProfile(i);
+        btnGroup.appendChild(openBtn);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-sm btn-warning me-2';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => editProfile(i);
+        btnGroup.appendChild(editBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn btn-sm btn-danger';
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => deleteProfile(i);
+        btnGroup.appendChild(delBtn);
+
+        div.appendChild(btnGroup);
+        profileList.appendChild(div);
+      });
+    }
+
+    function showCreateProfile() {
+      hideAllPages();
+      document.getElementById('profile-page').classList.add('active-page');
+      document.getElementById('edit-index').value = -1;
+      document.getElementById('name').value = '';
+      document.getElementById('age').value = '';
+      document.getElementById('height').value = '';
+      document.getElementById('weight').value = '';
+      document.getElementById('activity-level').value = '1.2';
+    }
+
+    function editProfile(index) {
+      hideAllPages();
+      document.getElementById('profile-page').classList.add('active-page');
+      document.getElementById('edit-index').value = index;
+
+      const p = profiles[index];
+      document.getElementById('name').value = p.name;
+      document.getElementById('age').value = p.age;
+      document.getElementById('height').value = p.height;
+      document.getElementById('weight').value = p.weight;
+      document.getElementById('activity-level').value = p.activity;
+    }
+
+    function deleteProfile(index) {
+      profiles.splice(index, 1);
+      saveProfiles();
+      if (profiles.length === 0) {
+        showCreateProfile();
+      } else {
+        showProfileSelection();
+      }
+    }
+
+    function openProfile(index) {
+      currentProfileIndex = index;
+      const p = profiles[index];
+      // compute maintenance
+      const bmr = 10 * p.weight + 6.25 * p.height - 5 * p.age + 5;
+      maintenanceCalories = Math.round(bmr * p.activity);
+
+      // reset goal cals
+      goalCalories = 0;
+
+      document.getElementById('maintenance-result').innerHTML = `
+        <strong>${p.name}</strong>,
+        your maintenance calories: <strong>${maintenanceCalories} kcal/day</strong>
+      `;
+      hideAllPages();
+      document.getElementById('home-page').classList.add('active-page');
+    }
+
+    function saveProfile() {
+      const idx = parseInt(document.getElementById('edit-index').value, 10);
+      const newProf = {
+        name: document.getElementById('name').value,
+        age: parseInt(document.getElementById('age').value),
+        height: parseInt(document.getElementById('height').value),
+        weight: parseFloat(document.getElementById('weight').value),
+        activity: parseFloat(document.getElementById('activity-level').value)
+      };
+
+      if (idx >= 0) {
+        profiles[idx] = newProf;
+      } else {
+        profiles.push(newProf);
+      }
+      saveProfiles();
+      showProfileSelection();
+    }
+
+    /**************************************************
+     * NAVIGATION & PAGE HELPERS                    *
+     *************************************************/
+    function hideAllPages() {
+      document.querySelectorAll('.page').forEach((p) => p.classList.remove('active-page'));
+    }
+    function showPage(id) {
+      hideAllPages();
+      document.getElementById(id).classList.add('active-page');
+    }
+    function navigateTo(id) {
+      showPage(id);
+      if (id === 'maintenance-page') {
+        updateMaintenanceDisplay();
+      } else if (id === 'dashboard-page') {
+        updateDashboardDisplay();
+        updateChart();
+      } else if (id === 'food-page') {
+        const text = document.getElementById('goal-result').innerText;
         let chosenGoal = 'maintain';
         if (text.includes('bulk')) chosenGoal = 'bulk';
         else if (text.includes('cut')) chosenGoal = 'cut';
         else if (text.includes('maintain')) chosenGoal = 'maintain';
         loadFoodSuggestions(chosenGoal);
-      } else if (pageId === 'dashboard-page') {
-        updateChart();
       }
     }
 
-    // 4) Set Goal => show 4 weekly changes: 0.4, 0.5, 0.7, 1.0
-    function setGoal(goal) {
-      let message = '';
+    function updateMaintenanceDisplay() {
+      if (currentProfileIndex < 0) return;
+      const p = profiles[currentProfileIndex];
+      document.getElementById('maintenance-result').innerHTML = `
+        <strong>${p.name}</strong>,
+        your maintenance calories: <strong>${maintenanceCalories} kcal/day</strong>
+      `;
+    }
+
+    /**************************************************
+     * GOAL SELECTION (CUT/BULK sub-options)         *
+     *************************************************/
+    function prepareGoal(goalType) {
+      // show sub-options for 0.4, 0.5, 0.7, 1.0 changes
+      const changes = [0.4, 0.5, 0.7, 1.0];
+      let html = `<h5>Select your weekly ${goalType} rate (kg/week):</h5>`;
+      changes.forEach((ch) => {
+        html += `<button class='btn btn-sm btn-lavender me-2' onclick="setGoal('${goalType}', ${ch})">${ch} kg/week</button>`;
+      });
+      document.getElementById('goal-options').innerHTML = html;
+      document.getElementById('goal-options').style.display = 'block';
+      document.getElementById('goal-result').innerHTML = '';
+    }
+
+    function setGoal(goal, chosenChange=0) {
       if (goal === 'maintain') {
-        message = `To maintain, eat ~${maintenanceCalories} kcal/day.<br/>No weekly weight change expected.`;
         goalCalories = maintenanceCalories;
-      } else {
-        const changes = [0.4, 0.5, 0.7, 1.0];
-        message = '<h5>Your 4 possible daily targets:</h5>';
-        changes.forEach((ch) => {
-          const dailyDiff = (ch * 7700) / 7; // cals/day
-          let cals = 0;
-          let direction = '';
-          if (goal === 'cut') {
-            cals = Math.round(maintenanceCalories - dailyDiff);
-            direction = 'loss';
-          } else if (goal === 'bulk') {
-            cals = Math.round(maintenanceCalories + dailyDiff);
-            direction = 'gain';
-          }
-          message += `<p>${ch} kg/week => ~${cals} kcal/day => ~${ch} kg ${direction}/week</p>`;
-        });
-        goalCalories = maintenanceCalories; // or pick a default
+        document.getElementById('goal-options').style.display = 'none';
+        document.getElementById('goal-result').innerHTML = `
+          To maintain, eat ~${maintenanceCalories} kcal/day.<br/>
+          No weekly weight change expected.
+        `;
+        return;
       }
-      document.getElementById('goal-result').innerHTML = message;
+
+      // handle cut/bulk with chosenChange
+      if (!chosenChange) {
+        // user hasn't selected suboption, skip
+        return;
+      }
+
+      // daily difference = chosenChange * 7700 cals / 7
+      const dailyDiff = (chosenChange * 7700) / 7;
+      let cals = 0;
+      let direction = '';
+      if (goal === 'cut') {
+        cals = Math.round(maintenanceCalories - dailyDiff);
+        direction = 'loss';
+      } else {
+        cals = Math.round(maintenanceCalories + dailyDiff);
+        direction = 'gain';
+      }
+      goalCalories = cals;
+
+      document.getElementById('goal-options').style.display = 'none';
+      document.getElementById('goal-result').innerHTML = `
+        <p>${chosenChange} kg/week => ~${cals} kcal/day => ~${chosenChange} kg ${direction}/week</p>
+      `;
     }
 
-    // 5) Food Suggestions
+    /**************************************************
+     * FOOD SUGGESTIONS                             *
+     *************************************************/
     const foodSuggestionsData = {
       cut: {
         breakfast: [
           'Egg white omelette with spinach',
-          'Greek yogurt with mixed berries',
-          'Protein smoothie with kale',
+          'Greek yogurt with berries',
+          'Protein smoothie with kale'
         ],
         lunch: [
           'Grilled chicken salad',
           'Turkey wrap with veggies',
-          'Quinoa bowl with black beans',
+          'Quinoa bowl with black beans'
         ],
         dinner: [
           'Steamed fish with broccoli',
           'Stir-fried tofu with veggies',
-          'Grilled shrimp with asparagus',
+          'Grilled shrimp with asparagus'
         ],
         snacks: [
           'Apple slices with peanut butter',
           'Carrot sticks with hummus',
-          'Protein bar',
-        ],
+          'Protein bar'
+        ]
       },
       bulk: {
         breakfast: [
           'Oatmeal with banana & peanut butter',
           'Eggs and avocado toast',
-          'Protein pancakes with berries',
+          'Protein pancakes with berries'
         ],
         lunch: [
           'Grilled chicken with quinoa',
           'Beef stir-fry with brown rice',
-          'Turkey sandwich with salad',
+          'Turkey sandwich with salad'
         ],
         dinner: [
           'Salmon with sweet potato',
           'Pasta with lean ground beef',
-          'Chicken curry with rice',
+          'Chicken curry with rice'
         ],
         snacks: [
           'Trail mix (nuts & dried fruit)',
           'Protein shake',
-          'Greek yogurt with honey',
-        ],
+          'Greek yogurt with honey'
+        ]
       },
       maintain: {
         breakfast: [
           'Scrambled eggs with toast',
           'Greek yogurt parfait',
-          'Smoothie bowl',
+          'Smoothie bowl'
         ],
         lunch: [
           'Grilled chicken salad',
           'Turkey & avocado wrap',
-          'Veggie stir-fry with tofu',
+          'Veggie stir-fry with tofu'
         ],
         dinner: [
           'Baked salmon & quinoa',
           'Chicken & vegetable soup',
-          'Grilled shrimp with greens',
+          'Grilled shrimp with greens'
         ],
         snacks: [
           'Mixed nuts',
           'Fruit & cheese',
-          'Whole wheat crackers & hummus',
-        ],
-      },
+          'Whole wheat crackers & hummus'
+        ]
+      }
     };
 
     function loadFoodSuggestions(goal) {
@@ -416,16 +628,18 @@
       html += `<h5>Lunch:</h5><p>${ln}</p>`;
       html += `<h5>Dinner:</h5><p>${dn}</p>`;
       html += `<h5>Snack:</h5><p>${sn}</p>`;
-
       document.getElementById('food-suggestions').innerHTML = html;
     }
 
-    // 6) AI Chat => daily intake => midnight reset
+    /**************************************************
+     * AI CHAT & DAILY INTAKE                       *
+     *************************************************/
     function addFood() {
       checkMidnightReset();
       const input = document.getElementById('food-input').value.trim();
       if (!input) return;
-      // Random 100-500 cals
+
+      // random cals 100-500
       const estimatedCalories = Math.floor(Math.random() * 401) + 100;
       dailyIntakeCalories += estimatedCalories;
       saveDailyIntake();
@@ -439,29 +653,37 @@
       const today = new Date().toDateString();
       const savedDate = localStorage.getItem('lastResetDay');
       if (savedDate !== today) {
-        // new day => reset
         dailyIntakeCalories = 0;
         localStorage.setItem('lastResetDay', today);
       } else {
-        // same day => load existing
-        let existing = parseInt(localStorage.getItem('dailyIntake'), 10);
+        const existing = parseInt(localStorage.getItem('dailyIntake'), 10);
         if (!isNaN(existing)) {
           dailyIntakeCalories = existing;
         }
       }
     }
-
     function saveDailyIntake() {
       localStorage.setItem('dailyIntake', dailyIntakeCalories);
     }
 
-    // 7) Dashboard => circular chart with dailyIntake vs. target
+    /**************************************************
+     * DASHBOARD & CHART                            *
+     *************************************************/
+    function updateDashboardDisplay() {
+      // show the final daily target on top
+      const dashGoal = document.getElementById('dashboard-goal');
+      if (goalCalories > 0) {
+        dashGoal.innerHTML = `Goal Calories: <strong>${goalCalories}</strong>`;
+      } else {
+        dashGoal.innerHTML = `Goal Calories: <em>Not set yet</em>`;
+      }
+    }
+
     function updateChart() {
       if (window.myChart) {
         window.myChart.destroy();
       }
       const ctx = document.getElementById('calorieChart').getContext('2d');
-      // If user didn't pick a goal, default daily target to 2500
       const dailyTarget = goalCalories > 0 ? goalCalories : 2500;
       const intake = dailyIntakeCalories;
       const remaining = dailyTarget - intake;
@@ -473,22 +695,17 @@
           datasets: [
             {
               data: [intake, remaining > 0 ? remaining : 0],
-              backgroundColor: ['#007bff', '#e9ecef'],
-            },
-          ],
+              backgroundColor: ['#87CEEB', '#E6E6FA']
+            }
+          ]
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
-        },
+          maintainAspectRatio: false
+        }
       });
     }
 
-    // Expose functions
-    window.navigateTo = navigateTo;
-    window.setGoal = setGoal;
-    window.addFood = addFood;
   </script>
 </body>
-
 </html>
