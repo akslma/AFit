@@ -22,7 +22,6 @@
       color: #000;
       text-align: center;
     }
-
     /* Splash/Welcome Screen */
     #welcome-screen {
       display: flex;
@@ -55,13 +54,12 @@
     .active-page {
       display: block;
     }
-
     .container {
       max-width: 600px;
       margin: 2rem auto;
     }
 
-    /* Branding Header on pages (with a small profile image) */
+    /* Branding Header on pages (with a small embedded profile image) */
     #app-header {
       display: flex;
       align-items: center;
@@ -76,6 +74,7 @@
       border-radius: 8px;
       margin-right: 1rem;
       box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      object-fit: cover;
     }
 
     /* Profile cards on selection page */
@@ -128,15 +127,36 @@
 </head>
 
 <body>
-  <!-- Splash/Welcome Screen -->
+  <!-- Splash/Welcome Screen with embedded logo (data URI) -->
   <div id="welcome-screen">
-    <img src="afit-logo.png" alt="Afit Health App Logo" />
+    <!-- Base64-encoded PNG as an example logo -->
+    <img
+      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAGXRFWHRTb2Z0
+           d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAB9VBMVEUAAAB0NEx0NExzME1zME10M0x0M0yUZkyUZkyUZkw
+           0M03TTM3TTM1STg1STjtUEU0ME3VU03VU0z7TXM7TXM0MUu3Oz2xNDWdPUyYOk+MOk+FOE2HNENvREtwNUrb
+           PUmtQE2gP0Z0M0x0NEx0M0xuLEupOUmnOU2kO0qkOEusPEmrOkioOEilOkufN0uYAAAAPk2gQE2dQUyeS2OR
+           Nx5MN0n5Xj2BzsYIjOMgAADoCk9/czA0Kug4T3A0XDk2/SoAAAAuElEQVR42u3a2Q6DMAxF0QRYE+sthD7n/
+           90kqFKWVOUr64VXMbBxpAUAAAAAAAAAAAAAAAAAAAAAAAAAAB/0E0UIAUIADK6fs3zodTH0BgMGACjcrccr
+           wrebcEAmefTn8q+3dO5+I97nl88ro+rf5NXzHzlz9v/Td/v5D/jXtNAQAAAAAAAAAAAAAAAACAf4Ag/wAZ+
+           n8IfRxE+iwAAAAASUVORK5CYII="
+      alt="Afit Health App Logo"
+    />
     <h1>Afit Health App</h1>
   </div>
 
-  <!-- Branding Header (visible on all pages except splash) -->
+  <!-- Branding Header (with an embedded 'profile' image) -->
   <div id="app-header" class="page">
-    <img src="https://picsum.photos/100" alt="Profile Picture" />
+    <!-- Another Base64 placeholder for the small profile image in the header -->
+    <img
+      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAABJlBMVEUAAACqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+           qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+           qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+           qqqqqqo9TeIAAAABnRSTlMAAAAAAABupgeRAAAA50lEQVRIx63UPQ7CQBSF4S4JBVrFRusov//+2TTECl2
+           fQ4umSD8C7nB4MLyw6CB/zI0XRMIBnEEwYJ1QzR3b3v2OwYxg3LePZXan9KRPfGsxQ2CXdJPcQNZwjeCnkS+
+           3IRdH8oQzAxs2eHE9Byu/NMCH6mkD9VJGx+eA/1G+XTNVMof0q7cClQnSHS8ZmLfBhCE34C4nT1sp1A+x9l
+           fFePSPZzAxGrkbkIbeD0dvlaFm19tjW13/d9HO6ABW4GtyavubzwAAAABJRU5ErkJggg=="
+      alt="Profile Picture"
+    />
     <h2 class="m-0">AFit - Your Fitness Companion</h2>
   </div>
 
@@ -249,7 +269,7 @@
   <div id="goal-page" class="page">
     <div class="container">
       <h2>Choose Your Goal</h2>
-      <!-- If user picks cut or bulk, show sub-options for weekly weight change -->
+      <!-- If user picks cut or bulk, let them pick sub-options for weekly weight change -->
       <div class="mt-3">
         <button class="btn btn-sky btn-lg" onclick="prepareGoal('bulk')">Bulk</button>
         <button class="btn btn-lavender btn-lg" onclick="prepareGoal('cut')">Cut</button>
@@ -299,8 +319,8 @@
 
   <script>
     /**************************************************
-     * GLOBAL VARS & MULTI-PROFILE DATA             *
-     *************************************************/
+     * GLOBAL VARS & MULTI-PROFILE DATA (IN MEMORY)   *
+     **************************************************/
     let profiles = []; // array of { name, age, height, weight, activity }
     let currentProfileIndex = -1;
 
@@ -308,21 +328,23 @@
     let dailyIntakeCalories = 0;
     let goalCalories = 0; // final daily target after user picks suboption
 
+    // We'll store everything in memory (no localStorage),
+    // so data is lost on refresh or new session.
+
     document.addEventListener('DOMContentLoaded', () => {
       // Show splash for 5s
       setTimeout(() => {
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('app-header').classList.add('active-page');
 
-        loadProfiles();
+        // if we have at least one profile in memory, show selection
+        // else go to create profile
         if (profiles.length > 0) {
           showProfileSelection();
         } else {
           showPage('profile-page');
         }
       }, 5000);
-
-      checkMidnightReset();
 
       // Save or update profile
       document.getElementById('profile-form').addEventListener('submit', (event) => {
@@ -332,16 +354,8 @@
     });
 
     /**************************************************
-     *             PROFILE MANAGEMENT               *
-     *************************************************/
-    function loadProfiles() {
-      const data = localStorage.getItem('afitProfiles');
-      profiles = data ? JSON.parse(data) : [];
-    }
-    function saveProfiles() {
-      localStorage.setItem('afitProfiles', JSON.stringify(profiles));
-    }
-
+     *             PROFILE MANAGEMENT                *
+     **************************************************/
     function showProfileSelection() {
       hideAllPages();
       document.getElementById('profile-selection-page').classList.add('active-page');
@@ -408,7 +422,6 @@
 
     function deleteProfile(index) {
       profiles.splice(index, 1);
-      saveProfiles();
       if (profiles.length === 0) {
         showCreateProfile();
       } else {
@@ -419,7 +432,6 @@
     function openProfile(index) {
       currentProfileIndex = index;
       const p = profiles[index];
-      // compute maintenance
       const bmr = 10 * p.weight + 6.25 * p.height - 5 * p.age + 5;
       maintenanceCalories = Math.round(bmr * p.activity);
 
@@ -449,13 +461,12 @@
       } else {
         profiles.push(newProf);
       }
-      saveProfiles();
       showProfileSelection();
     }
 
     /**************************************************
-     * NAVIGATION & PAGE HELPERS                    *
-     *************************************************/
+     * NAVIGATION & PAGE HELPERS                     *
+     **************************************************/
     function hideAllPages() {
       document.querySelectorAll('.page').forEach((p) => p.classList.remove('active-page'));
     }
@@ -490,14 +501,13 @@
     }
 
     /**************************************************
-     * GOAL SELECTION (CUT/BULK sub-options)         *
-     *************************************************/
+     * GOAL SELECTION (CUT/BULK sub-options)          *
+     **************************************************/
     function prepareGoal(goalType) {
-      // show sub-options for 0.4, 0.5, 0.7, 1.0 changes
       const changes = [0.4, 0.5, 0.7, 1.0];
       let html = `<h5>Select your weekly ${goalType} rate (kg/week):</h5>`;
       changes.forEach((ch) => {
-        html += `<button class='btn btn-sm btn-lavender me-2' onclick="setGoal('${goalType}', ${ch})">${ch} kg/week</button>`;
+        html += `<button class='btn btn-sm btn-lavender me-2' onclick=\"setGoal('${goalType}', ${ch})\">${ch} kg/week</button>`;
       });
       document.getElementById('goal-options').innerHTML = html;
       document.getElementById('goal-options').style.display = 'block';
@@ -514,14 +524,9 @@
         `;
         return;
       }
+      if (!chosenChange) return; // user must pick suboption
 
-      // handle cut/bulk with chosenChange
-      if (!chosenChange) {
-        // user hasn't selected suboption, skip
-        return;
-      }
-
-      // daily difference = chosenChange * 7700 cals / 7
+      // dailyDiff = chosenChange * 7700 / 7
       const dailyDiff = (chosenChange * 7700) / 7;
       let cals = 0;
       let direction = '';
@@ -541,8 +546,8 @@
     }
 
     /**************************************************
-     * FOOD SUGGESTIONS                             *
-     *************************************************/
+     * FOOD SUGGESTIONS                              *
+     **************************************************/
     const foodSuggestionsData = {
       cut: {
         breakfast: [
@@ -632,43 +637,32 @@
     }
 
     /**************************************************
-     * AI CHAT & DAILY INTAKE                       *
-     *************************************************/
+     * AI CHAT & DAILY INTAKE (no local storage)      *
+     **************************************************/
     function addFood() {
-      checkMidnightReset();
+      // random cals 100-500
       const input = document.getElementById('food-input').value.trim();
       if (!input) return;
 
-      // random cals 100-500
       const estimatedCalories = Math.floor(Math.random() * 401) + 100;
       dailyIntakeCalories += estimatedCalories;
-      saveDailyIntake();
 
       document.getElementById('chat-box').innerHTML += `<p>${input}: ${estimatedCalories} kcal</p>`;
       document.getElementById('food-input').value = '';
       updateChart();
     }
 
+    // We'll just reset daily intake after midnight if needed,
+    // but since there's no local storage, a refresh also resets everything.
     function checkMidnightReset() {
-      const today = new Date().toDateString();
-      const savedDate = localStorage.getItem('lastResetDay');
-      if (savedDate !== today) {
-        dailyIntakeCalories = 0;
-        localStorage.setItem('lastResetDay', today);
-      } else {
-        const existing = parseInt(localStorage.getItem('dailyIntake'), 10);
-        if (!isNaN(existing)) {
-          dailyIntakeCalories = existing;
-        }
-      }
-    }
-    function saveDailyIntake() {
-      localStorage.setItem('dailyIntake', dailyIntakeCalories);
+      // Doing nothing special here since data is ephemeral anyway
+      // If you want to reset dailyIntake automatically, you can
+      // add time checks. But on refresh, we lose everything anyway.
     }
 
     /**************************************************
-     * DASHBOARD & CHART                            *
-     *************************************************/
+     * DASHBOARD & CHART (no data persistence)        *
+     **************************************************/
     function updateDashboardDisplay() {
       // show the final daily target on top
       const dashGoal = document.getElementById('dashboard-goal');
@@ -705,7 +699,6 @@
         }
       });
     }
-
   </script>
 </body>
 </html>
